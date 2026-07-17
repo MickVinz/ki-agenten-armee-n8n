@@ -1,0 +1,253 @@
+{
+  "name": "Social Media - Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14d9076e-27ea-4846-8b44-f83cf4022b9e",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "032201be-fa4b-47c5-92a5-da13fa99b0cd",
+      "name": "Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f2a8ff2d-6b59-4ad6-a2e7-8705354f4105",
+              "name": "response",
+              "value": "Error occurred. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        180
+      ],
+      "id": "2fa74ffa-a9db-4499-b06f-d885a6410ec6",
+      "name": "Try Again"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -700,
+        80
+      ],
+      "id": "2ba8a604-0820-497f-9b91-71a2a7058ca6",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -440,
+        380
+      ],
+      "id": "99b8217a-cb7e-4209-98d5-265d384db981",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "iH63rZMtYd6PMJir",
+          "name": "Crystalflow AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1nPCQDS5cuHQHPczvg6hpPj4YY5hp_wldL_HYWzrEIGw",
+          "mode": "list",
+          "cachedResultName": "Linkedin Kontent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nPCQDS5cuHQHPczvg6hpPj4YY5hp_wldL_HYWzrEIGw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tabellenblatt1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nPCQDS5cuHQHPczvg6hpPj4YY5hp_wldL_HYWzrEIGw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Datum": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Datum', `Das aktuelle Datum.`, 'string') }}",
+            "Thema": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Thema', `Das Thema über das ein Linkedin Post erstellt werden soll.`, 'string') }}",
+            "Linkedin Post": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Linkedin_Post', `Der Inhalt des Linkedin Posts in Plain Text.`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Datum",
+              "displayName": "Datum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Thema",
+              "displayName": "Thema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin Post",
+              "displayName": "Linkedin Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        -220,
+        380
+      ],
+      "id": "2e67a9bc-e084-4716-bef7-a9fb9589a1de",
+      "name": "savePost",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9ROJfBci1qpYoVL1",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query}}",
+        "options": {
+          "systemMessage": "=# Rolle\nDu bist ein Experte in der Erstellung von hochwertigen, ansprechenden und modernen LinkedIn-Posts auf deutsch. Du erhälst Informationen, über die du dann einen deutschen Linkedin Post erstellen sollst. Deine Aufgabe ist es, Inhalte zu verfassen, die:\n\n- Informativ und präzise sind, ohne überflüssige Informationen.\n- Engagierend und professionell wirken, sodass sie die Zielgruppe ansprechen und zum Dialog anregen.\n- SEO-optimiert sind, indem sie relevante Schlüsselwörter und Hashtags enthalten.\n- Strukturiert und übersichtlich präsentiert werden, unter Verwendung von Absätzen, Überschriften und Aufzählungen, um die Lesbarkeit zu erhöhen.\n- Ansprechend formatiert sind, mit emojies \n\nWichtiger Hinweis: Wenn du einen Linkedin Post erstellst musst du immer das \"savePost\" Tool nutzen, um den Linkedin Post zu speichern. \n\n# Tools\n## savePost\nNutze dieses Tool, um den Linkedin Post in einem Google Sheets Dokument zu speichern. Dabei gibst du das aktuelle Datum an (Spalte 1), das Thema des Posts (Spalte 2) und den Inhalt des Posts in plain Text (Spalte 3) an.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -440,
+        80
+      ],
+      "id": "eff40a41-2b19-4f1e-97a9-683cda82fcdf",
+      "name": "Social Media Agent",
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Social Media Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Social Media Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "savePost": {
+      "ai_tool": [
+        [
+          {
+            "node": "Social Media Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Media Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "026a09b3-ced3-4869-9993-68e473f88543",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b0155eb7741c71e121e8ae6624cbe1c1b88d8af67303265d5c74110aa9dee75a"
+  },
+  "id": "1PR3leodA2vlkPxw",
+  "tags": [
+    {
+      "createdAt": "2025-02-16T09:28:45.180Z",
+      "updatedAt": "2025-02-16T09:28:45.180Z",
+      "id": "9N4pMhakmxidbLXj",
+      "name": "tutorial"
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "name": "Notizen - Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
+        200
+      ],
+      "id": "6ad94deb-cc46-4182-be86-e85b03c9bae3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "iH63rZMtYd6PMJir",
+          "name": "Crystalflow AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f360190-a717-4a93-8336-d03ea65975d5",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -100
+      ],
+      "id": "e1270065-71a4-4ee9-8dbe-f911e29d11bc",
+      "name": "Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f360190-a717-4a93-8336-d03ea65975d5",
+              "name": "response",
+              "value": "An error occurred. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        80
+      ],
+      "id": "fa2b34c1-2b76-440b-b2f6-64f9b50e12bd",
+      "name": "Try Again"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -980,
+        -20
+      ],
+      "id": "553194e9-157c-47eb-a388-8c94510b7ac0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=# Rolle\nDu bist ein professioneller Ersteller von Notizen / To do's. Du kannst Notizen lesen und Notizen erstellen.\n\n# Tools\n\n## readNotes\nNutze dieses Tool, um alle aktuellen Notizen zu lesen.\n\n## writeNotes\nNutze dieses Tool, um eine neue Notiz zu erstellen. Dabei formatierst du die Notiz im Markdown-Format."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -760,
+        -20
+      ],
+      "id": "a8f94467-4ed7-4b3d-b5e1-db242618d15e",
+      "name": "Notizen Agent",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "1999c29e-cb23-80ba-9df4-cf156fca7b7d",
+          "mode": "list",
+          "cachedResultName": "Quick Notes",
+          "cachedResultUrl": "https://www.notion.so/1999c29ecb2380ba9df4cf156fca7b7d"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        260
+      ],
+      "id": "90296288-126e-439c-b7e8-6114a052c907",
+      "name": "readNotes",
+      "credentials": {
+        "notionApi": {
+          "id": "LgC5dKRHhTOpkUXV",
+          "name": "Notion"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "1999c29e-cb23-80ba-9df4-cf156fca7b7d",
+          "mode": "list",
+          "cachedResultName": "Quick Notes",
+          "cachedResultUrl": "https://www.notion.so/1999c29ecb2380ba9df4cf156fca7b7d"
+        },
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', `Titel der Notiz`, 'string') }}",
+        "blockUi": {
+          "blockValues": [
+            {
+              "richText": true,
+              "text": {
+                "text": [
+                  {
+                    "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', `Der Inhalt der Notiz.`, 'string') }}",
+                    "annotationUi": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        260
+      ],
+      "id": "1518a524-8bae-4871-bfa3-08561e669ca3",
+      "name": "writeNotes",
+      "credentials": {
+        "notionApi": {
+          "id": "LgC5dKRHhTOpkUXV",
+          "name": "Notion"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Notizen Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Notizen Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notizen Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "readNotes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Notizen Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "writeNotes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Notizen Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "38f7d7da-8709-4a5e-ae7f-1a0a70641a6d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b0155eb7741c71e121e8ae6624cbe1c1b88d8af67303265d5c74110aa9dee75a"
+  },
+  "id": "o4AWi4nLNuaJZBAj",
+  "tags": [
+    {
+      "createdAt": "2025-02-16T09:28:45.180Z",
+      "updatedAt": "2025-02-16T09:28:45.180Z",
+      "id": "9N4pMhakmxidbLXj",
+      "name": "tutorial"
+    }
+  ]
+}

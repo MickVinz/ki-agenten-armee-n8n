@@ -1,0 +1,301 @@
+{
+  "name": "Kontake - Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        60
+      ],
+      "id": "f855107f-0851-4de7-b98c-a9c33a94bd9d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "iH63rZMtYd6PMJir",
+          "name": "Crystalflow AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f360190-a717-4a93-8336-d03ea65975d5",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        -240
+      ],
+      "id": "c028461b-a9b2-4140-84c9-3491ce6c8106",
+      "name": "Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f360190-a717-4a93-8336-d03ea65975d5",
+              "name": "response",
+              "value": "An error occurred. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        -60
+      ],
+      "id": "a1b4a536-a04f-4cda-95c0-a6fecc923922",
+      "name": "Try Again"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -420,
+        -160
+      ],
+      "id": "53df0560-dbc5-4540-89a1-742443de5750",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ER7hY9-4NS9N_GYVSMPfx95DY3QmFtYig-Zw6z6EBI8",
+          "mode": "list",
+          "cachedResultName": "Kontakte",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ER7hY9-4NS9N_GYVSMPfx95DY3QmFtYig-Zw6z6EBI8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tabellenblatt1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ER7hY9-4NS9N_GYVSMPfx95DY3QmFtYig-Zw6z6EBI8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        -80,
+        140
+      ],
+      "id": "88948ed6-775f-46a3-ba31-5a790e6487cc",
+      "name": "getContacts",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9ROJfBci1qpYoVL1",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ER7hY9-4NS9N_GYVSMPfx95DY3QmFtYig-Zw6z6EBI8",
+          "mode": "list",
+          "cachedResultName": "Kontakte",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ER7hY9-4NS9N_GYVSMPfx95DY3QmFtYig-Zw6z6EBI8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tabellenblatt1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ER7hY9-4NS9N_GYVSMPfx95DY3QmFtYig-Zw6z6EBI8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email__using_to_match_', ``, 'string') }}",
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Telefonnummer": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Telefonnummer', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Telefonnummer",
+              "displayName": "Telefonnummer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        80,
+        140
+      ],
+      "id": "b92bd354-3c11-4122-8e62-0054cfbc4464",
+      "name": "addContact",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9ROJfBci1qpYoVL1",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=# Rolle\nDu bist ein Assistent für die Kontaktverwaltung. Deine Aufgaben umfassen das Abrufen von Kontakten, das Hinzufügen neuer Kontakte oder das Aktualisieren von Kontaktinformationen.\n\n# Tools\n## getContacts\nNutze dieses Tool, um Kontaktinformationen zu erhalten. \n\n## addContact\nNutze dieses Tool, um neue Kontaktinformationen zu speichern.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -200,
+        -160
+      ],
+      "id": "f9bb336d-0ac8-4669-a264-9ed4d94c0cdb",
+      "name": "Kontakt Agent",
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Kontakt Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Kontakt Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getContacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kontakt Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addContact": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kontakt Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kontakt Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "eeb64e54-5236-4c90-bf3c-ea2c2f7d1558",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b0155eb7741c71e121e8ae6624cbe1c1b88d8af67303265d5c74110aa9dee75a"
+  },
+  "id": "zpjP9vSXOHtqgCkF",
+  "tags": [
+    {
+      "createdAt": "2025-02-16T09:28:45.180Z",
+      "updatedAt": "2025-02-16T09:28:45.180Z",
+      "id": "9N4pMhakmxidbLXj",
+      "name": "tutorial"
+    }
+  ]
+}

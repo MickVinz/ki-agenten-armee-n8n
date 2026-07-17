@@ -1,0 +1,366 @@
+{
+  "name": "Kalender - Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "4c419909-50fa-4bbf-8de0-4a601b46f638",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        320
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "iH63rZMtYd6PMJir",
+          "name": "Crystalflow AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ab380a2-a8d3-421c-ab4e-748ea8fb7904",
+              "name": "response",
+              "value": "Unable to perform task. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "48b1ed03-8a63-4a72-ad8e-254ec6ba9e44",
+      "name": "Try Again",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39c2f302-03be-4464-a17a-d7cc481d6d44",
+              "name": "=response",
+              "value": "={{$json.output}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1745fef3-b869-4e53-95c0-b63c7ccf3285",
+      "name": "Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -920,
+        100
+      ],
+      "id": "35439c56-2f8a-41f6-99f7-ca519a57ecd5",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=# Rolle\nDu bist ein Kalenderagent. Deine Aufgaben umfassen das Erstellen, Abrufen und Löschen von Ereignissen im Kalender des Benutzers.\n\n# Tools \n## getEvents\nNutze dieses Tool, um Kalenderpläne auf Anfrage abzurufen.\n\n## createEvent\nNutze dieses Tool, um einen Solo Termin zu erstellen (nur Benutzer als Teilnehmer).\n\n## updateEvent\nNutze dieses Tool, um ein Ereignis zu aktualisieren. Du musst zuerst \"getEvents\" verwenden, um die ID des zu aktualisierenden Ereignisses zu erhalten.\n\n## createEventWithAttendee\nNutze dieses Tool, um ein Ereigniss mit Teilnehmern zu planen.\n\n## deleteEvent\nNutze dieses Tool, um ein Ereignis zu löschen. Du musst zuerst \"Get Events\" verwenden, um die ID des zu löschenden Ereignisses zu erhalten.  \n\n## Letzte Hinweise\nHier ist das aktuelle Datum/die aktuelle Zeit: {{ $now }}  \nFalls keine Dauer für ein Ereignis angegeben ist, gehe davon aus, dass es eine Stunde dauert.\n"
+        }
+      },
+      "id": "23814191-a766-4269-8d4e-e1d6e289e46b",
+      "name": "Kalender Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -680,
+        100
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "ivanov@crystalflow.ai",
+          "mode": "list",
+          "cachedResultName": "Julian"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Die ID des Ereignisses.`, 'string') }}",
+        "updateFields": {
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `Der Endzeitpunkt des Ereignisses.`, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Der Startzeitpunkt des Ereignisses.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -120,
+        500
+      ],
+      "id": "77a27c47-dbd1-45c4-b0cb-ee01e71087be",
+      "name": "updateEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sars6SsilFwPf2F5",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "ivanov@crystalflow.ai",
+          "mode": "list",
+          "cachedResultName": "Julian"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Die ID des Ereignisses.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        20,
+        480
+      ],
+      "id": "2d07cc7e-e107-43e4-88d3-053665bb40ba",
+      "name": "deleteEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sars6SsilFwPf2F5",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "ivanov@crystalflow.ai",
+          "mode": "list",
+          "cachedResultName": "Julian"
+        },
+        "returnAll": true,
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', `Der Tag vor dem vom Nutzer gewünschten Datum.`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', `Der Tag nach dem vom Nutzer gewünschten Datum.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -580,
+        480
+      ],
+      "id": "2ab21439-b974-4afb-90c3-ad24261f72c9",
+      "name": "getEvents",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sars6SsilFwPf2F5",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "ivanov@crystalflow.ai",
+          "mode": "list",
+          "cachedResultName": "Julian"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Der Startzeitpunkt des Ereignisses.`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `Der Endzeitpunkt des Ereignisses.`, 'string') }}",
+        "additionalFields": {
+          "attendees": [],
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `Der Titel des Ereignisses.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -420,
+        500
+      ],
+      "id": "243c7184-b6ef-4413-aab6-22884e1e80a3",
+      "name": "createEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sars6SsilFwPf2F5",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "ivanov@crystalflow.ai",
+          "mode": "list",
+          "cachedResultName": "Julian"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Der Startzeitpunkt des Ereignisses.`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `Der Endzeitpunkt des Ereignisses.`, 'string') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Attendees', `Die Emailadresse des Teilnehmers.`, 'string') }}"
+          ],
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `Der Titel des Ereignisses.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -280,
+        480
+      ],
+      "id": "3d1bedc9-aee8-41d8-8baf-7f5131c8a194",
+      "name": "createEventWithAttendee",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sars6SsilFwPf2F5",
+          "name": "ivanov@crystalflow.ai"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Kalender Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Kalender Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kalender Agent": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kalender Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kalender Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getEvents": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kalender Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kalender Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createEventWithAttendee": {
+      "ai_tool": [
+        [
+          {
+            "node": "Kalender Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "51f0d498-64bb-4f24-85f8-d667b4f6ec57",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b0155eb7741c71e121e8ae6624cbe1c1b88d8af67303265d5c74110aa9dee75a"
+  },
+  "id": "BdFCZ3nkBduhRMiT",
+  "tags": [
+    {
+      "createdAt": "2025-02-16T09:28:45.180Z",
+      "updatedAt": "2025-02-16T09:28:45.180Z",
+      "id": "9N4pMhakmxidbLXj",
+      "name": "tutorial"
+    }
+  ]
+}
